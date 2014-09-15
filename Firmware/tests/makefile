@@ -26,10 +26,10 @@ CFLAGS = -I $(INC) \
 	-g -Wall \
 	-pedantic \
 	--std=gnu99 \
-	-DIgnoreTest=1 \
+	-DIN_TEST_MODE=1 \
 	-Wgnu
 	
-LDFLAGS = -I. $(INC) -DIGNOREINTESTS=1 -L "$${LIBPATH}" -lm $(LIBS)
+LDFLAGS = -I. $(INC) -DIN_TEST_MODE=1 -L "$${LIBPATH}" -lm $(LIBS)
 
 TRG=$(TARGETDIR)/$(PROJECTNAME)
 

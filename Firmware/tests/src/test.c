@@ -1,17 +1,17 @@
 
-#ifndef IgnoreTest
-#define IgnoreTest 1
+#ifndef IN_TEST_MODE
+#define IN_TEST_MODE 1
 #endif
 
-#include "input/inputbufferTest.h"
-#include "ui/menuTest.h"
+#include "mem/cpy.h"
+#include "mem/structcpy.h"
 
 void *dummy(void);
 
 // This struct contains all test suites
 TEST_SUITES {
-	TEST_SUITE_ADD(INPUTBUFFER_TEST),
-    TEST_SUITE_ADD(UI_MENUTEST),
+	TEST_SUITE_ADD(IOBUFFER_TEST),
+	TEST_SUITE_ADD(STRUCTCPY_TEST),
     TEST_SUITES_CLOSURE
 };
 

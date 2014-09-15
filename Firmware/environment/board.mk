@@ -3,7 +3,7 @@
 
 # BOARD REVISION
 REVISION = 1
-SERIALNR = DEV001
+SERIALNR =
 
 # Name of target controller
 MCU = atmega328p

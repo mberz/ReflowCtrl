@@ -9,7 +9,7 @@
 
 #ifndef __usbdrv_h_included__
 #define __usbdrv_h_included__
-#include "../../src/usbconfig.h"
+#include "../../../Config/usbconfig.h"
 #include "usbportability.h"
 
 /*

@@ -20,3 +20,7 @@ A V-USB Development Boardsoftware
 
 ### Host ###
 
+## Protokol ##
+
+Byte 0: State
+Byte 1 - 3: Tempearature
