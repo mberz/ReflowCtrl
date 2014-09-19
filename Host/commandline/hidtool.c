@@ -100,6 +100,7 @@ int         err;
     }
     if((dev = openDevice()) == NULL)
         exit(1);
+    // convert r/w into struct. 
     if(strcasecmp(argv[1], "read") == 0){
         int len = sizeof(buffer);
         if((err = usbhidGetReport(dev, 0, buffer, &len)) != 0){
