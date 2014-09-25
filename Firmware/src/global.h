@@ -2,6 +2,8 @@
 #ifndef _global_h
 #define _global_h
 
+#include "config.h"
+
 // GLOBAL DEFINES AND MACROS
 #define LED_ON 		STATUS_LED_PORT |= ( 1 << STATUS_LED_PIN); 
 #define LED_OFF 	STATUS_LED_PORT &= ~( 1 << STATUS_LED_PIN); 
@@ -15,7 +17,7 @@ void *dummy(void);
 // GLOBAL SYS FUNCTIONS
 // ---------------------------------------------
 void (*reboot)(void);
-
+void globalInit(void);
 
 // DEBUGGING
 // ---------------------------------------------
@@ -25,5 +27,8 @@ void (*reboot)(void);
 #define debug_uart(...) do{ } while (0)
 #endif
 
+// DEVICE DATA
+// ---------------------------------------------
+volatile uint16_t globalTemp;
 
 #endif

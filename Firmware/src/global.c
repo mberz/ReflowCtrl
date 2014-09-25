@@ -37,5 +37,6 @@ void (*reboot)(void) = (void *) 0x0000;
 
 void globalInit(void){
 	STATUS_LED_DDR = (1 << STATUS_LED_PIN);
+    globalTemp = 0;
 	
 }

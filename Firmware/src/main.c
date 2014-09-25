@@ -19,9 +19,10 @@
 #include "../../Config/usbconfig.h"
 
 #include "communication/usb.h"
+#include "sensor/max6675.h"
 
 #include "../src-lib/usbdrv/usbdrv.h"
-#include "../src-lib/usbdrv/oddebug.h"        
+#include "../src-lib/usbdrv/oddebug.h"
 
  
 /* ------------------------------------------------------------------------- */
@@ -34,7 +35,10 @@ int main(void) {
      * the status of the watchdog (on/off, period) is PRESERVED OVER RESET!
      */
      
-     globalInit();
+    globalInit();
+    currentAddress = 0;
+    bytesRemaining = 0;
+    
 	// STATUS LED
 	LED_ON;
      
@@ -54,12 +58,26 @@ int main(void) {
         _delay_ms(1);
     }
     usbDeviceConnect();
+    
+    globalTemp = 0;
+    
+    
+    init_max6675();
+    
+     // Enable Global Interrupts
     sei();
-    DBG1(0x01, 0, 0);       /* debug output: main loop starts */
+    
+
+    //DBG1(0x01, 0, 0);       /* debug output: main loop starts */
+    
+    
+    
     for(;;){                /* main event loop */
-        DBG1(0x02, 0, 0);   /* debug output: main loop iterates */
+        //DBG1(0x02, 0, 0);   /* debug output: main loop iterates */
         wdt_reset();
+        
         usbPoll();
+        globalTemp = read_max6675() * 100;
     }
     return 0;	
 }
