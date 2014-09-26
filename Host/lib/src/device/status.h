@@ -17,9 +17,9 @@ report_raw_data_t current_device_raw_data;
 report_raw_data_t set_next_raw_data;
 
 #define STATUS_DIRECTION    0  // 0= from device, 1= from host
-#define STATUS_PRE_HEAT     1
-#define STATUS_SET_TEMP     2
-#define STATUS_REACHED_TEMP 3
+#define STATUS_PREHEAT      1 
+#define STATUS_SETTEMP      2
+#define STATUS_REACHEDTEMP  3
 #define STATUS_IS_LOCKED    4
 #define STATUS_IS_COOLING   5
 #define STATUS_IS_HEATING   6

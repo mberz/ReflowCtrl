@@ -6,7 +6,8 @@ REVISION = 1
 SERIALNR =
 
 # Name of target controller
-MCU = atmega328p
+MCU = atmega8
+#atmega328p
 
 # Frequency of the controller
 F_CPU = 16000000UL

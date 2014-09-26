@@ -33,15 +33,11 @@ unsigned char globalTransmissionBuffer[32] = {
 
 
 uchar   usbFunctionRead(uchar *data, uchar len){
-//	data_out.control = 0x00;
-//	data_out.temp = 0;
-//	data_out.command = 0;
+
 	
     //data_out = data_in;
     data_out.temp = globalTemp;
     
-    // # testing
-    //data_out = data_in;
     
      if(len > bytesRemaining) {
          len = bytesRemaining;
@@ -71,11 +67,9 @@ uchar   usbFunctionWrite(uchar *data, uchar len){
     
     currentAddress += len;
     bytesRemaining -= len;
-    
-    
-    
+    shouldSetTargetTemp = ((data_in.control >> 2) & 1);
+	data_out.control &=  ~(1 << 3);        				
     return bytesRemaining == 0; // return 1 if this was the last chunk
-
 }
 
 usbMsgLen_t usbFunctionSetup(uchar data[8]) {

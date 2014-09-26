@@ -23,32 +23,25 @@ ISR (TIMER0_OVF_vect) {
       PORTB &= ~(1 << PB0);                                             
       _delay_us(100);
 
-      // for(bytecounter = 0 ; bytecounter < 16 ; bytecounter++){           
-//           PORTB |= (1 << PB5);       
-//           if(bytecounter >= 3 && bytecounter <= 14 ){                                   
-//           	act_temp += (PINB & (1 << PB4)) *2 ^ Bitnr++;
-//           }
-//           PORTB &= ~(1 << PB5);                                 
-//       }
-  for(int i=0; i<10; i++){
+		for(int i=0; i<10; i++){
 
-    //clk-toggle for next bit (skips irrelevant msb in first iteration)
-    PORTB |= (1 << PB5);
-    _delay_ms(1);
-    PORTB &= ~(1 << PB5);
-    _delay_ms(1);
+	    //clk-toggle for next bit (skips irrelevant msb in first iteration)
+    	PORTB |= (1 << PB5);
+	    _delay_ms(1);
+	    PORTB &= ~(1 << PB5);
+	    _delay_ms(1);
 
-    // shift
-    act_temp = act_temp << 1;
+	    // shift
+	    act_temp = act_temp << 1;
     
-    // add pin state (0 or 1)
-    act_temp += ((PINB >> PB4) & 1);       
-  }
+	    // add pin state (0 or 1)
+	    act_temp += ((PINB >> PB4) & 1);       
+	  }
 
        PORTB |= (1 << PB0);                      
     
    //   act_temp = act_temp * 0.25;
-      
+        
     return act_temp;
  }
 
@@ -96,19 +89,41 @@ void init_max6675(){
     TIMSK0 |= (1<<TOIE0);   
 }
 
+uint16_t getAvarage(uint16_t* datapoints){
+	uint16_t min = datapoints[0];
+	uint16_t max = 0;
+	uint16_t sum = 0;
+	uint16_t avg = 0;
+	for(int i=0; i <= 5; ++i){
+		if(datapoints[i] < min){
+			min = datapoints[i];
+		} else if(datapoints[i] > max){
+			max = datapoints[i];
+		} 
+		sum +=  datapoints[i];
+	}
+	sum -= (min + max);	
+	avg = sum /5;
+	return avg;
+}
+
 uint16_t read_max6675(){
-    static uint16_t lasttemp;
+    static uint16_t lasttemp = 0;
+    static uint8_t measure = 0;
     if(shouldReadTemp){
-        LED_TOGGEL;
+        //LED_TOGGEL;
         if(max6675_error == 0){
             uint16_t t = gettemp();
-            if(t > 0){
-                lasttemp = t;
-            }
-        } else {
-            // failsave reinitialize
-            init_max6675();
-        }
+             measurements[measure++] = t;
+             if(measure >= 5){
+             lasttemp = getAvarage(&measurements);
+             	measure = 0;
+             }
+			//lasttemp = t;
+         } else {
+             // failsave reinitialize
+             init_max6675();
+         }
         shouldReadTemp = 0;
     }
     return lasttemp;

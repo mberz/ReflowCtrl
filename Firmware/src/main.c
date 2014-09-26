@@ -20,6 +20,7 @@
 
 #include "communication/usb.h"
 #include "sensor/max6675.h"
+#include "control/reflow.h"
 
 #include "../src-lib/usbdrv/usbdrv.h"
 #include "../src-lib/usbdrv/oddebug.h"
@@ -60,9 +61,10 @@ int main(void) {
     usbDeviceConnect();
     
     globalTemp = 0;
-    
+    state = STATE_PREHEAT;
     
     init_max6675();
+    control_init();
     
      // Enable Global Interrupts
     sei();
@@ -71,13 +73,75 @@ int main(void) {
     //DBG1(0x01, 0, 0);       /* debug output: main loop starts */
     
     
-    
+            LED_OFF;
     for(;;){                /* main event loop */
         //DBG1(0x02, 0, 0);   /* debug output: main loop iterates */
         wdt_reset();
         
         usbPoll();
         globalTemp = read_max6675() * 100;
+        
+        if( shouldSetTargetTemp == 1){
+        	targetTemp = (data_in.temp / 100);
+        	shouldSetTargetTemp = 0;
+        }
+        switch(state){
+        	case STATE_PREHEAT:		
+        		if(targetTemp > 0){
+    	    		LED_ON;
+    	    		control_lock(&data_out, 1);
+	        		control_preheat(&data_out, 1);
+	        		first_targetTemp = targetTemp;
+	
+    	    		if(globalTemp/100 >= targetTemp){
+     	    			LED_OFF;
+         				state = STATE_HOLD;
+         				control_lock(&data_out, 0);
+         				control_preheat(&data_out, 0);
+        			}
+        		}
+				break;
+			
+        	case STATE_SOLDER:
+        		LED_ON;
+        		if(globalTemp/100 >= (targetTemp - TEMP_JITTER)){
+        			control_reached(&data_out, 1);
+        			state = STATE_HOLD;
+        		}
+    	    	break;
+        	
+        	case STATE_HOLD:
+        		LED_OFF
+				if(((data_in.control >> CONTROL_SETTEMP_BIT) & 1)){
+        		if(!((data_in.control >> CONTROL_PREHEAT_BIT) & 1)){
+        			if(!((data_out.control >> CONTROL_ISLOCKED_BIT) & 1)){
+        					if(!((data_out.control >> CONTROL_REACHEDTEMP_BIT) & 1)) {		
+        					state = STATE_SOLDER;
+        					}
+        				}
+        				if(((data_in.control >> CONTROL_COOLING_BIT) & 1)){
+        					state = STATE_COOL;
+        				}
+        			}
+        		}   
+	        	break;
+        	
+        	case STATE_COOL:
+        		LED_OFF;
+        		control_lock(&data_out, 1);
+        		control_cool(&data_out, 1);
+        		targetTemp = 0;
+        		if(globalTemp <= first_targetTemp){
+        			control_lock(&data_out, 0);
+	        		control_cool(&data_out, 0);
+	        		state = STATE_PREHEAT;
+	        		// Status LED
+        		}
+		        break;
+        }
+        
+        
+        
     }
     return 0;	
 }

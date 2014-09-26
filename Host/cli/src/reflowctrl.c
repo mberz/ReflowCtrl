@@ -19,6 +19,7 @@ static struct option long_options[] =
      We distinguish them by their indices. */
     {"preheat", optional_argument,       0, 'p'},
     {"temperature",  required_argument, 0, 't'},
+    {"stop",  no_argument, 0, 's'},
     {"command",  required_argument, 0, 'c'},
     {0, 0, 0, 0}
 };
@@ -35,7 +36,7 @@ int main(int argc, char **argv){
     } else {
         // write to device
         int c;
-        c = getopt_long (argc, argv, "p:t:c:", long_options, &option_index);
+        c = getopt_long (argc, argv, "p:t:c:s", long_options, &option_index);
         
         send->direction     = 1;
         send->pre_heat      = 0;
@@ -52,6 +53,7 @@ int main(int argc, char **argv){
                     send->pre_heat = 1;
                     double_t p = atoi(optarg);
                     send->temperature = p;
+                    send->set_temp = 1;
                     printf("Initialize pre heat phase to %.2f°C. \n", send->temperature);
                     break;
                     
@@ -64,7 +66,17 @@ int main(int argc, char **argv){
                         exit(1);
                     }
                     send->temperature = t;
+                    send->set_temp = 1;
                     printf("Set temperature to %.2f \n", send->temperature );
+                    break;
+
+                case 's':
+                    send->temperature = 0; // first line bevore declaration. (dummy)
+                    send->temperature = t;
+                    send->set_temp = 1;
+                    send->is_cooling = 1;
+                    printf("Stop reflow process and cooling down.");
+                    printf("Please open the door!");
                     break;
                     
                 case 'c':
