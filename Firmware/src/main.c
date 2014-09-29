@@ -73,7 +73,7 @@ int main(void) {
     //DBG1(0x01, 0, 0);       /* debug output: main loop starts */
     
     
-            LED_OFF;
+    LED_OFF;
     for(;;){                /* main event loop */
         //DBG1(0x02, 0, 0);   /* debug output: main loop iterates */
         wdt_reset();
@@ -88,13 +88,12 @@ int main(void) {
         switch(state){
         	case STATE_PREHEAT:		
         		if(targetTemp > 0){
-    	    		LED_ON;
+    	    		LET_LED_TOGGLE = 1;
     	    		control_lock(&data_out, 1);
 	        		control_preheat(&data_out, 1);
 	        		first_targetTemp = targetTemp;
 	
     	    		if(globalTemp/100 >= targetTemp){
-     	    			LED_OFF;
          				state = STATE_HOLD;
          				control_lock(&data_out, 0);
          				control_preheat(&data_out, 0);
@@ -104,6 +103,7 @@ int main(void) {
 			
         	case STATE_SOLDER:
         		LED_ON;
+        		LET_LED_TOGGLE = 1;
         		if(globalTemp/100 >= (targetTemp - TEMP_JITTER)){
         			control_reached(&data_out, 1);
         			state = STATE_HOLD;
@@ -127,7 +127,8 @@ int main(void) {
 	        	break;
         	
         	case STATE_COOL:
-        		LED_OFF;
+				LED_ON;
+        		LET_LED_TOGGLE = 1;
         		control_lock(&data_out, 1);
         		control_cool(&data_out, 1);
         		targetTemp = 0;

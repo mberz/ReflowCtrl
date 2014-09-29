@@ -2,9 +2,9 @@
 ######                                                           ######
 #######################################################################
 ###### Project:   Reflow Oven USB Controller                     ######
-###### Developer: petershaw, cccffm                               ######
-###### Date: Jan/2014 - Apr/2014                                 ######
-###### URL: https://github.com/petershaw/dirarare-artnet-server  ######
+###### Developer: petershaw, fast : ccc-ffm                      ######
+###### Date: 2014                                                ######
+###### URL: https://github.com/petershaw/ReflowCtrl              ######
 #######################################################################
 ###### Revision: 1		                                 ######
 ###### Date: September 2014                                      ###### 

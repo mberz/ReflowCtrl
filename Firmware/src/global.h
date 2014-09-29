@@ -6,9 +6,11 @@
 #include <stdbool.h>
 
 // GLOBAL DEFINES AND MACROS
+int LET_LED_TOGGLE;
 #define LED_ON 		STATUS_LED_PORT |= ( 1 << STATUS_LED_PIN); 
-#define LED_OFF 	STATUS_LED_PORT &= ~( 1 << STATUS_LED_PIN); 
-#define LED_TOGGEL	STATUS_LED_PORT ^= ( 1 << STATUS_LED_PIN); 
+#define LED_OFF 	STATUS_LED_PORT &= ~( 1 << STATUS_LED_PIN); LET_LED_TOGGLE = 0;
+#define LED_TOGGEL	STATUS_LED_PORT ^= ( 1 << STATUS_LED_PIN);
+
 
 // DUMMY FUNCTION
 // ---------------------------------------------

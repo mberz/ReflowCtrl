@@ -111,7 +111,9 @@ uint16_t read_max6675(){
     static uint16_t lasttemp = 0;
     static uint8_t measure = 0;
     if(shouldReadTemp){
-        //LED_TOGGEL;
+    	if(LET_LED_TOGGLE){
+        	LED_TOGGEL;
+        }
         if(max6675_error == 0){
             uint16_t t = gettemp();
              measurements[measure++] = t;
