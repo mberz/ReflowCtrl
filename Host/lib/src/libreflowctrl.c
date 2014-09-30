@@ -6,8 +6,15 @@
 
 
 #include "libreflowctrl.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "usb/hidtool.h"
 #include "usb/hiddata.h"
+#ifdef __cplusplus
+}
+#endif
 
 // Macros to handle the status
 #define CHECK_STATUS(var,statusbit) ((var) & (1<<(statusbit)))
