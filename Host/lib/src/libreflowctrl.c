@@ -9,6 +9,10 @@
 #include "usb/hidtool.h"
 #include "usb/hiddata.h"
 
+// Macros to handle the status
+#define CHECK_STATUS(var,statusbit) ((var) & (1<<(statusbit)))
+#define SET_STATUS(var,statusbit) ((var) |= (1<<(statusbit)))
+#define CLEAR_STATUS(var,statusbit) ((var) & ~(1<<(statusbit)))
 
 void reflowctrl_init(void){
     recived = calloc(1, sizeof(report_parsed_data_t));
@@ -25,27 +29,29 @@ void setDataToRaw(char *data, report_raw_data_t *rarPtr){
     // check integer - must be different on each read.
     static int8_t lastcheck = -1;
     
+    // copy raw data into the struct
     memcpy(rarPtr, data +1, 4);
+    
     // parse into readable struc
     recived->direction = false;
+    
     if(CHECK_STATUS(rarPtr->control, STATUS_DIRECTION)){
         recived->direction = true;
         fprintf(stderr, "Reviced data is not coming from the device.\n");
-        //exit(1);
     }
     
     recived->pre_heat = false;
-    if(CHECK_STATUS(rarPtr->control, STATUS_PRE_HEAT)){
+    if(CHECK_STATUS(rarPtr->control, STATUS_PREHEAT)){
         recived->pre_heat = true;
     }
     
     recived->set_temp = false;
-    if(CHECK_STATUS(rarPtr->control, STATUS_SET_TEMP)){
+    if(CHECK_STATUS(rarPtr->control, STATUS_SETTEMP)){
         recived->set_temp = true;
     }
     
     recived->reached_temp = false;
-    if(CHECK_STATUS(rarPtr->control, STATUS_REACHED_TEMP)){
+    if(CHECK_STATUS(rarPtr->control, STATUS_REACHEDTEMP)){
         recived->reached_temp = true;
     }
     
@@ -80,31 +86,27 @@ void setDataToRaw(char *data, report_raw_data_t *rarPtr){
     
     recived->temperature = (rarPtr->temp /100);
     recived->command = rarPtr->command;
-    
 }
 
 void reflowctrl_read_cb(int *running, void *callback(report_parsed_data_t *)){
-    usbDevice_t* device = hidtool_open();
-    while(running) {
-        char *data = hidtool_read(device);
+    usbDevice_t* device = (usbDevice_t *) hidtool_open();
+    while(*running) {
+        char *data = hidtool_read((usb_dev_handle *)device);
         setDataToRaw(data, &current_device_raw_data);
         callback(recived);
-        sleep(running);
+        sleep(*running);
     }
-    hidtool_close(device);
+    hidtool_close((usb_dev_handle *)device);
 }
 
 report_parsed_data_t *reflowctrl_read(void){
     // open device
-    usbDevice_t* device = hidtool_open();
-    
+    usbDevice_t* device = (usbDevice_t *) hidtool_open();
     // get data bytes from usb
-    char *data = hidtool_read(device);
+    char *data = hidtool_read((usb_dev_handle *)device);
     // set into raw_struc
     setDataToRaw(data, &current_device_raw_data);
-
-    hidtool_close(device);
-    
+    hidtool_close((usb_dev_handle *)device);
     return recived;
 }
 
@@ -122,15 +124,15 @@ void reflowctrl_write(report_parsed_data_t *data){
     }
     
     if(data->pre_heat){
-        SET_STATUS(set_next_raw_data.control, STATUS_PRE_HEAT);
+        SET_STATUS(set_next_raw_data.control, STATUS_PREHEAT);
     } else {
-        CLEAR_STATUS(set_next_raw_data.control, STATUS_PRE_HEAT);
+        CLEAR_STATUS(set_next_raw_data.control, STATUS_PREHEAT);
     }
     
     if(data->set_temp){
-        SET_STATUS(set_next_raw_data.control, STATUS_SET_TEMP);
+        SET_STATUS(set_next_raw_data.control, STATUS_SETTEMP);
     } else {
-        CLEAR_STATUS(set_next_raw_data.control, STATUS_SET_TEMP);
+        CLEAR_STATUS(set_next_raw_data.control, STATUS_SETTEMP);
     }
     
     if( data->check){
@@ -146,10 +148,9 @@ void reflowctrl_write(report_parsed_data_t *data){
     set_next_raw_data.command = data->command;
     
     // open device
-    usbDevice_t* device = hidtool_open();
-    hidtool_write(device, &set_next_raw_data);
-    hidtool_close(device);
-    
+    usbDevice_t* device = (usbDevice_t *) hidtool_open();
+    hidtool_write((usb_dev_handle *)device, (char *)&set_next_raw_data);
+    hidtool_close((usb_dev_handle *)device);
 }
 
 

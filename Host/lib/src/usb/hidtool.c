@@ -67,18 +67,6 @@ FILE    *fp = stdout;
         fprintf(fp, "\n");
 }
 
-static int  hexread(char *buffer, char *string, int buflen)
-{
-char    *s;
-int     pos = 0;
-
-    while((s = strtok(string, ", ")) != NULL && pos < buflen){
-        string = NULL;
-        buffer[pos++] = (char)strtol(s, NULL, 0);
-    }
-    return pos;
-}
-
 /* ------------------------------------------------------------------------- */
 usb_dev_handle* hidtool_open(void){
     usb_dev_handle *dev;
@@ -91,7 +79,6 @@ usb_dev_handle* hidtool_open(void){
 
 void hidtool_close(usb_dev_handle *dev){
     usbhidCloseDevice(dev);
-    
 }
 
 char* hidtool_read(usb_dev_handle *dev){
@@ -102,10 +89,7 @@ char* hidtool_read(usb_dev_handle *dev){
     int len = sizeof(readbuffer);
     if((err = usbhidGetReport(dev, 0, readbuffer, &len)) != 0){
         fprintf(stderr, "error reading data: %s\n", usbErrorMessage(err));
-    }else{
-//        hexdump(readbuffer + 1, sizeof(readbuffer) - 1);
     }
-
     return readbuffer;
 }
 
@@ -115,10 +99,6 @@ void hidtool_write(usb_dev_handle *dev, char *data){
     memset(writebuffer, 0, 5);
     memcpy(writebuffer +1, data, 4);
     
-//    printf("send: \n");
-//    hexdump(writebuffer +1, 4);
-    
-    int len = sizeof(writebuffer);
     if((err = usbhidSetReport(dev, writebuffer, 5)) != 0)   /* add a dummy report ID */
     fprintf(stderr, "error writing data: %s\n", usbErrorMessage(err));
 }

@@ -40,7 +40,7 @@ CFLAGS = -I$(INC) -g -O$(OPTLEVEL)                \
          -DREVISION=$(REVISION)                   \
 		 --std=gnu99                              \
          -fshort-enums               \
-         -funsigned-bitfields -funsigned-char      \
+         -funsigned-char      \
          -Wall -Wstrict-prototypes                 \
          $(USBFLAGS)
 

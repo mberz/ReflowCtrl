@@ -1,26 +1,6 @@
-USBDevBoard
+Reflow oven controler
 ======================
 
-A V-USB Development Boardsoftware
+A Reflow oven controller firmware for the AtMega328p
 
-## Hardware ##
-### Schematics ###
-
-
-
-
-
-### Partlist ###
-
-
-
-## Software ##
-
-### Firmware ###
-
-### Host ###
-
-## Protokol ##
-
-Byte 0: State
-Byte 1 - 3: Tempearature
+    someone has to write some usefull description.
