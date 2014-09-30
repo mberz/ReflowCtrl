@@ -28,6 +28,14 @@ void *dummy(void);
 #define CONTROL_HEATING_BIT		6
 #define CONTROL_CHECK_BIT		7 
 
+/*
+ * States 
+ */
+#define STATE_PREHEAT 1
+#define STATE_SOLDER  2
+#define STATE_HOLD    3
+#define STATE_COOL    4
+
 // GLOBAL SYS FUNCTIONS
 // ---------------------------------------------
 void (*reboot)(void);
@@ -57,5 +65,7 @@ bool shouldSetTargetTemp;
 volatile uint16_t globalTemp;
 volatile uint16_t targetTemp;
 uint16_t first_targetTemp;
+
+uint8_t state;
 
 #endif

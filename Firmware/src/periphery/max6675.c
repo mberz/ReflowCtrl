@@ -1,11 +1,15 @@
 
 #include <avr/interrupt.h>
 #include <util/delay.h>
+
 #include "../global.h"
 #include "max6675.h"
 
+/* 
+ * Service vector that enables a flag when a new temperature should read
+ */
 ISR (TIMER0_OVF_vect) {
-    static count = 0;
+    static uint8_t count = 0;
     count++;
     if(count >= interval){
         count = 0;
@@ -14,53 +18,50 @@ ISR (TIMER0_OVF_vect) {
     }
 }
 
- uint16_t gettemp(){
-     uint16_t act_temp;
-     act_temp = 0;
+uint16_t gettemp(){
+    uint16_t act_temp;
+    act_temp = 0;
     
-      uint8_t   bytecounter = 0;
-      uint8_t Bitnr = 0;
-      PORTB &= ~(1 << PB0);                                             
-      _delay_us(100);
-
-		for(int i=0; i<10; i++){
-
-	    //clk-toggle for next bit (skips irrelevant msb in first iteration)
-    	PORTB |= (1 << PB5);
+    MAX6675_PORT &= ~(1 << MAX6675_CS);
+    _delay_us(100);
+    
+    for(int i=0; i<10; i++){
+        //clk-toggle for next bit (skips irrelevant msb in first iteration)
+        MAX6675_PORT |= (1 << MAX6675_CLK);
 	    _delay_ms(1);
-	    PORTB &= ~(1 << PB5);
+	    MAX6675_PORT &= ~(1 << MAX6675_CLK);
 	    _delay_ms(1);
 
 	    // shift
 	    act_temp = act_temp << 1;
     
 	    // add pin state (0 or 1)
-	    act_temp += ((PINB >> PB4) & 1);       
-	  }
+	    act_temp += ((MAX6675_PIN >> MAX6675_SO) & 1);
+    }
 
-       PORTB |= (1 << PB0);                      
-    
-   //   act_temp = act_temp * 0.25;
-        
+    MAX6675_PORT |= (1 << MAX6675_CS);
     return act_temp;
  }
 
+/*
+ * Checks if the device is connected
+ */
 uint8_t getTC(void){                                            
     uint8_t TC = 0;
     uint8_t bytecounter = 0;
-    PORTB &= ~(1 << PB0);   
+    MAX6675_PORT &= ~(1 << MAX6675_CS);
     for(bytecounter = 0 ; bytecounter < 16 ; bytecounter++){
-        PORTB |= (1 << PB5);                            
+        MAX6675_PORT |= (1 << MAX6675_CLK);
         if(bytecounter == 2){                           
-            if((PINB & (1 << PB4))){          
+            if((MAX6675_PIN & (1 << MAX6675_SO))){
                 TC = 0;
             } else {                                      
                 TC = 255;
             }
         }
-        PORTB &= ~(1 << PB5);                                       
+        MAX6675_PORT &= ~(1 << MAX6675_CLK);
     }
-    PORTB |= (1 << PB0);                                                
+    MAX6675_PORT |= (1 << MAX6675_CS);
     return TC;                                                          
 }
 
@@ -68,22 +69,25 @@ void init_max6675(){
     shouldReadTemp = 0;
 
 	//clk and cs as output
-    DDRB |=  (1 << PB5) | (1 << PB0);   
-    DDRB &= ~(1 << PB4);
+    MAX6675_DDR |=  (1 << MAX6675_CLK) | (1 << MAX6675_CS);
+    MAX6675_DDR &= ~(1 << MAX6675_SO);
         
 	// pullup
-	PORTB |= (1<<PB4); 
+	MAX6675_PORT |= (1 << MAX6675_SO);
     
-    //cs high for measure
-	DDRB |= (1<<PB0);
+    // cs high for measure
+	MAX6675_DDR |= (1 << MAX6675_CS);
     
     max6675_error = 0;
      if(getTC() == 255){
+         // running smoothly
          interval = 20;
      } else {
          interval = 1;
-         max6675_error = 1;
+         // Blick and check fast
+         max6675_error = 5;
      }
+    
     // Enable timer
     TCCR0B |= (1<<CS02) | (1<<CS00);        // Prescaler 1024
     TIMSK0 |= (1<<TOIE0);   

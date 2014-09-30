@@ -8,7 +8,16 @@
 
     uint16_t measurements[5];
 
+    /*
+     * Initialise the Sensor
+     */
     void init_max6675(void);
+
+    /* 
+     * Read the current temperature
+     * in *100 notation. 
+     * Only full °C are supported. 
+     */
     uint16_t read_max6675(void);
 
 #endif

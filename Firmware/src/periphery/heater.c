@@ -2,8 +2,11 @@
 
 #include <avr/interrupt.h>
 #include "../global.h"
-#include "reflow.h"
+#include "heater.h"
 
+/** 
+ * Service vetor that controls the heater module
+ */
 ISR(TIMER2_OVF_vect) {
     static uint8_t count = 0;
     count++;
@@ -27,8 +30,7 @@ ISR(TIMER2_OVF_vect) {
     }
 }
 
-void control_init(void){
-
+void heater_init(void){
 	// set relay port
 	DDRB |= (1 << PB1);
 	PORTB &= ~(1 << PB1);
@@ -42,7 +44,7 @@ void control_init(void){
     TIMSK2 |= (1<<TOIE2);  
 }
 
-void control_lock(report_data_t *data, bool lock){
+void heater_lock(report_data_t *data, bool lock){
 	if(lock){
 		data->control |= (1 << CONTROL_ISLOCKED_BIT);
 	} else {
@@ -50,7 +52,7 @@ void control_lock(report_data_t *data, bool lock){
 	}
 }
 
-void control_preheat(report_data_t *data, bool preheat){
+void heater_preheat(report_data_t *data, bool preheat){
 	if(preheat){
 		data->control |= (1 << CONTROL_PREHEAT_BIT);
 	} else {
@@ -58,7 +60,7 @@ void control_preheat(report_data_t *data, bool preheat){
 	}
 }
 
-void control_reached(report_data_t *data, bool reached){
+void heater_reached(report_data_t *data, bool reached){
 	if(reached){
 		data->control |= (1 << CONTROL_REACHEDTEMP_BIT);
 	} else {
@@ -66,7 +68,7 @@ void control_reached(report_data_t *data, bool reached){
 	}
 }
 
-void control_cool(report_data_t *data, bool cool){
+void heater_cool(report_data_t *data, bool cool){
 	if(cool){
 		data->control |= (1 << CONTROL_COOLING_BIT);
 	} else {

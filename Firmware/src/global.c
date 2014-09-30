@@ -11,11 +11,9 @@
 #define VALUE(x) VALUE_TO_STRING(x)
 #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
 
-
 // DUMMY FUNCTION
 // ---------------------------------------------
 void *dummy(void){return (void *) NULL;};
-
 
 // GLOBAL SYS FUNCTIONS
 // ---------------------------------------------
@@ -38,5 +36,5 @@ void (*reboot)(void) = (void *) 0x0000;
 void globalInit(void){
 	STATUS_LED_DDR = (1 << STATUS_LED_PIN);
     globalTemp = 0;
-	
+    state = STATE_PREHEAT;
 }
