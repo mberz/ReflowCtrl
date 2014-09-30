@@ -9,24 +9,43 @@
  */
 ISR(TIMER2_OVF_vect) {
     static uint8_t count = 0;
-    count++;
+    static uint8_t turn_switch = 1;
+    ++count;
     if(count >= DECIDE_HEATING_INTERVAL){
         count = 0;
+        ++turn;
+        uint8_t turn_8t = (turn / (HEATER_PERIOD_FAKTOR *1000));
+        if(turn_8t == 100){
+            turn = 0;
+            turn_switch = 1;
+        }
+                           
+        bool shouldHeat = false;
         if(state != STATE_COOL){
 	        int16_t diffTemp = (globalTemp /100)- targetTemp;
 	        if( diffTemp > 0 ){
-			    TURN_HEATER_OFF();
+                shouldHeat = false;
 			    data_out.control &= ~(1 << 6);
     	    } else if( diffTemp < 0 ){
-    	    	TURN_HEATER_ON();
+    	    	shouldHeat = true;
     	    	data_out.control |= 1<< 6;
     	    } else {
     	    	// freue ich mich.
     	    }
     	} else {
-    		TURN_HEATER_OFF();
+    		shouldHeat = false;
     		data_out.control &= ~(1 << 6);
     	}
+        
+        if((turn_8t % power) > 0){
+            if(turn_switch){
+                if(shouldHeat){ TURN_HEATER_ON(); } else { TURN_HEATER_OFF(); }
+            } else {
+                TURN_HEATER_OFF();
+            }
+        } else {
+            --turn_switch;
+        }
     }
 }
 
@@ -37,8 +56,13 @@ void heater_init(void){
 	
 	// set state to preheat initially 
 	state = STATE_PREHEAT;
-	targetTemp = 0;
-
+	// Start temperature is 0°C = off
+    targetTemp = 0;
+    // The initial power is 100%
+    power = 100;
+    // after the timer is powerd on, the first turn of the first period starts
+    turn = 0;
+    
 	// Timer 2 
 	TCCR2B |= (1<<CS22) | (1<<CS20);        // Prescaler 1024
     TIMSK2 |= (1<<TOIE2);  
@@ -76,3 +100,6 @@ void heater_cool(report_data_t *data, bool cool){
 	}
 }
 
+void heater_setPower(uint8_t p){
+    power = p;
+}
