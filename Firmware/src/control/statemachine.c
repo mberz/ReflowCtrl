@@ -29,7 +29,7 @@ uint8_t control_run(uint8_t state){
             break;
             
         case STATE_HOLD:
-            LED_OFF
+            LED_OFF;
             if(((data_in.control >> CONTROL_SETTEMP_BIT) & 1)){
                 if(!((data_in.control >> CONTROL_PREHEAT_BIT) & 1)){
                     if(!((data_out.control >> CONTROL_ISLOCKED_BIT) & 1)){

@@ -6,7 +6,7 @@
 #include "../global.h"
 
 #define DECIDE_HEATING_INTERVAL 140
-#define HEATER_PERIOD_FAKTOR    10
+#define HEATER_PERIOD_FAKTOR    10		// think this has to be a factor of 2
 
 #define TURN_HEATER_OFF()	do { HEATER_PORT &= ~(1 << HEATER_SELECT); } while(0);
 #define TURN_HEATER_ON()	do { HEATER_PORT |=  (1 << HEATER_SELECT); } while(0);
@@ -18,7 +18,8 @@ uint8_t power;
 // a period are 100 turns * (n*1000). n is defined by HEATER_PERIOD_FAKTOR. A period is a full cycle.
 // 80% power with a HEATER_PERIOD_FAKTOR of 10 means, that 800000 turns will be performed
 // with the heater on and 200000 turns will perform with the heater off to fullfill the period.
-uint32_t turn;
+//uint32_t turn;
+uint8_t turn;
 
 /**
  * Initialise the heater module

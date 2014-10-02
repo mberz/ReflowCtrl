@@ -13,12 +13,13 @@ ISR(TIMER2_OVF_vect) {
     ++count;
     if(count >= DECIDE_HEATING_INTERVAL){
         count = 0;
-        ++turn;
-        uint8_t turn_8t = (turn / (HEATER_PERIOD_FAKTOR *1000));
-        if(turn_8t == 100){
-            turn = 0;
-            turn_switch = 1;
-        }
+        turn +=  HEATER_PERIOD_FAKTOR;
+        
+//         uint8_t turn_8t = (turn ); //  /(HEATER_PERIOD_FAKTOR));
+         if(turn > 100){
+             turn = 0;
+             turn_switch = 1;
+         }
                            
         bool shouldHeat = false;
         if(state != STATE_COOL){
@@ -32,20 +33,21 @@ ISR(TIMER2_OVF_vect) {
     	    } else {
     	    	// freue ich mich.
     	    }
+
     	} else {
     		shouldHeat = false;
     		data_out.control &= ~(1 << 6);
     	}
         
-        if((turn_8t % power) > 0){
+        if((turn % power) > 0){
             if(turn_switch){
                 if(shouldHeat){ TURN_HEATER_ON(); } else { TURN_HEATER_OFF(); }
             } else {
                 TURN_HEATER_OFF();
             }
         } else {
-            --turn_switch;
-        }
+			--turn_switch;
+		 }
     }
 }
 

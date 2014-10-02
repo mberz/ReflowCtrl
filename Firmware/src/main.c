@@ -75,7 +75,7 @@ int main(void) {
     
     // Switch the Light off. - End of initialisation phase    
     LED_OFF;
-    
+
     // Mainloop
     for(;;){   
         // pet the dog
@@ -94,6 +94,11 @@ int main(void) {
         }
         
         state = control_run(state);
+        
+        if(state == STATE_HOLD){
+        	power = 50;
+        }
+        
     }
     return 0;	
 }
