@@ -19,6 +19,5 @@ void io_read(void){
     printf("%-30s %s\n", "Is Heating:",             YESNO( data->is_heating )   );
     printf("%-30s %s\n", "Is Cooling:",             YESNO( data->is_cooling )   );
     printf("%-30s %s\n", "Temperature is reached:", YESNO( data->reached_temp ) );
-   printf("%-30s %3s\n", "------------------------------", "---");
-    
+    printf("%-30s %3s\n", "------------------------------", "---");
 }
