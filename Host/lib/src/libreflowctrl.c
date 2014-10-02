@@ -119,7 +119,6 @@ void reflowctrl_read_cb(int *running, void *callback(report_parsed_data_t *)){
         callback(recived);
         sleep(running);
     }
-    //hidtool_close((usb_dev_handle *)device);
 }
 
 report_parsed_data_t *reflowctrl_read(void){
@@ -129,7 +128,6 @@ report_parsed_data_t *reflowctrl_read(void){
     char *data = hidtool_read((usb_dev_handle *)device);
     // set into raw_struc
     setDataToRaw(data, &current_device_raw_data);
-    // hidtool_close((usb_dev_handle *)device);
     return recived;
 }
 
@@ -173,7 +171,6 @@ void reflowctrl_write(report_parsed_data_t *data){
     // open device
     open_device();
     hidtool_write((usb_dev_handle *)device, (char *)&set_next_raw_data);
-    //hidtool_close((usb_dev_handle *)device);
 }
 
 
