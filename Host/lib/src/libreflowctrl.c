@@ -98,11 +98,11 @@ void setDataToRaw(char *data, report_raw_data_t *rarPtr){
 
 void reflowctrl_read_cb(int *running, void *callback(report_parsed_data_t *)){
     usbDevice_t* device = (usbDevice_t *) hidtool_open();
-    while(*running) {
+    while(running) {
         char *data = hidtool_read((usb_dev_handle *)device);
         setDataToRaw(data, &current_device_raw_data);
         callback(recived);
-        sleep(*running);
+        sleep(running);
     }
     hidtool_close((usb_dev_handle *)device);
 }
