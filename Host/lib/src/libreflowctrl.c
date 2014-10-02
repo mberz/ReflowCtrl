@@ -22,7 +22,10 @@ extern "C" {
 #define SET_STATUS(var,statusbit) ((var) |= (1<<(statusbit)))
 #define CLEAR_STATUS(var,statusbit) ((var) & ~(1<<(statusbit)))
 
+usbDevice_t* device;
+
 void reflowctrl_init(void){
+	device = NULL;
     recived = calloc(1, sizeof(report_parsed_data_t));
     send = calloc(1, sizeof(report_parsed_data_t));
     check = 0;
@@ -96,25 +99,37 @@ void setDataToRaw(char *data, report_raw_data_t *rarPtr){
     recived->command = rarPtr->command;
 }
 
+void open_device(void){
+	if(device == NULL){
+	    device = (usbDevice_t *) hidtool_open();
+	}
+}
+
+void destroy(void){
+	hidtool_close((usb_dev_handle *)device);
+	device = NULL;
+}
+
 void reflowctrl_read_cb(int *running, void *callback(report_parsed_data_t *)){
-    usbDevice_t* device = (usbDevice_t *) hidtool_open();
+	open_device();
+
     while(running) {
         char *data = hidtool_read((usb_dev_handle *)device);
         setDataToRaw(data, &current_device_raw_data);
         callback(recived);
         sleep(running);
     }
-    hidtool_close((usb_dev_handle *)device);
+    //hidtool_close((usb_dev_handle *)device);
 }
 
 report_parsed_data_t *reflowctrl_read(void){
     // open device
-    usbDevice_t* device = (usbDevice_t *) hidtool_open();
+    open_device();
     // get data bytes from usb
     char *data = hidtool_read((usb_dev_handle *)device);
     // set into raw_struc
     setDataToRaw(data, &current_device_raw_data);
-    hidtool_close((usb_dev_handle *)device);
+    // hidtool_close((usb_dev_handle *)device);
     return recived;
 }
 
@@ -156,9 +171,9 @@ void reflowctrl_write(report_parsed_data_t *data){
     set_next_raw_data.command = data->command;
     
     // open device
-    usbDevice_t* device = (usbDevice_t *) hidtool_open();
+    open_device();
     hidtool_write((usb_dev_handle *)device, (char *)&set_next_raw_data);
-    hidtool_close((usb_dev_handle *)device);
+    //hidtool_close((usb_dev_handle *)device);
 }
 
 

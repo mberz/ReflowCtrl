@@ -37,7 +37,6 @@ typedef struct {
 report_raw_data_t current_device_raw_data;
 report_raw_data_t set_next_raw_data;
 
-
 typedef struct {
     bool        direction;
     bool        pre_heat;
@@ -60,6 +59,11 @@ report_parsed_data_t *send;
  * Initialise the reflow controler 
  */
 void reflowctrl_init(void);
+
+/**
+ * Close and free the device
+ */
+void destroy(void);
 
 /** 
  * Close the controler 
