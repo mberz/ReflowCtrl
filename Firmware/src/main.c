@@ -75,7 +75,8 @@ int main(void) {
     
     // Switch the Light off. - End of initialisation phase    
     LED_OFF;
-
+	heater_setPower(100);
+	
     // Mainloop
     for(;;){   
         // pet the dog
@@ -93,11 +94,39 @@ int main(void) {
         	shouldSetTargetTemp = 0;
         }
         
+        // check controls
+        if(data_in.command == 'x'){
+        	shouldSetTargetTemp = 0;
+        	state = STATE_PREHEAT;
+        	LED_OFF;
+        	heater_lock(&data_out, 0);
+            heater_cool(&data_out, 0);
+            heater_preheat(&data_out, 0);
+            heater_reached(&data_out, 0);
+            heater_setPower(100);
+            data_in.command = '\0';
+        }
+        
         state = control_run(state);
         
+        // adjust temperature
         if(state == STATE_HOLD){
-        	power = 50;
-        }
+        	heater_setPower(20);
+        	
+        } else if( state == STATE_SOLDER){
+	        if( (globalTemp /100) >= (targetTemp - HEATER_ADJUST_TEMP_TRIGGER)){
+        		uint8_t tempDifference = ((targetTemp + HEATER_ADJUST_TEMP_TRIGGER) - (globalTemp /100));
+        		uint8_t newPower;
+        		if(tempDifference > 0){
+	        		newPower = (100 / (HEATER_ADJUST_TEMP_TRIGGER *2) * tempDifference);
+    			} else {
+    				newPower = 0;
+    			}    		
+				heater_setPower(newPower);
+    	    } else {
+    	    	heater_setPower(100);
+    	    }
+    	}
         
     }
     return 0;	

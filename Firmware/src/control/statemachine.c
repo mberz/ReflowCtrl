@@ -7,8 +7,8 @@ uint8_t control_run(uint8_t state){
         case STATE_PREHEAT:
             if(targetTemp > 0){
                 LET_LED_TOGGLE = 1;
-                heater_lock(&data_out, 1);
                 heater_preheat(&data_out, 1);
+                heater_lock(&data_out, 1);
                 first_targetTemp = targetTemp;
                 
                 if(globalTemp/100 >= targetTemp){

@@ -5,8 +5,9 @@
 #include <stdbool.h>
 #include "../global.h"
 
-#define DECIDE_HEATING_INTERVAL 140
-#define HEATER_PERIOD_FAKTOR    10		// think this has to be a factor of 2
+#define DECIDE_HEATING_INTERVAL 	140
+#define HEATER_PERIOD_FAKTOR    	10		// think this has to be a factor of 2
+#define HEATER_ADJUST_TEMP_TRIGGER	50
 
 #define TURN_HEATER_OFF()	do { HEATER_PORT &= ~(1 << HEATER_SELECT); } while(0);
 #define TURN_HEATER_ON()	do { HEATER_PORT |=  (1 << HEATER_SELECT); } while(0);

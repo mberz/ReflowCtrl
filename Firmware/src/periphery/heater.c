@@ -14,8 +14,7 @@ ISR(TIMER2_OVF_vect) {
     if(count >= DECIDE_HEATING_INTERVAL){
         count = 0;
         turn +=  HEATER_PERIOD_FAKTOR;
-        
-//         uint8_t turn_8t = (turn ); //  /(HEATER_PERIOD_FAKTOR));
+
          if(turn > 100){
              turn = 0;
              turn_switch = 1;
@@ -41,9 +40,9 @@ ISR(TIMER2_OVF_vect) {
         
         if((turn % power) > 0){
             if(turn_switch){
-                if(shouldHeat){ TURN_HEATER_ON(); } else { TURN_HEATER_OFF(); }
-            } else {
                 TURN_HEATER_OFF();
+            } else {
+                if(shouldHeat){ TURN_HEATER_ON(); } else { TURN_HEATER_OFF(); }
             }
         } else {
 			--turn_switch;
