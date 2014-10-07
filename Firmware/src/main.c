@@ -106,9 +106,9 @@ int main(void) {
             heater_reached(&data_out, 0);
             heater_setPower(100);
             data_in.command = '\0';
-            data_in.temperature = 0;
+            data_in.temp = 0;
             data_out.command = '\0';
-            data_out.temperature = 0;
+            data_out.temp = 0;
         }
         
         state = control_run(state);
