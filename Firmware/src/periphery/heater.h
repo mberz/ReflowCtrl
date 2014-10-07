@@ -7,13 +7,14 @@
 
 #define DECIDE_HEATING_INTERVAL 	140
 #define HEATER_PERIOD_FAKTOR    	10		// think this has to be a factor of 2
-#define HEATER_ADJUST_TEMP_TRIGGER	50
+#define HEATER_ADJUST_TEMP_TRIGGER	40      // Delta °C to targetTemp when adjust should begin
+#define HEATER_IDLE_POWER           20      // DutyCycle Power to hold the temperature
 
 #define TURN_HEATER_OFF()	do { HEATER_PORT &= ~(1 << HEATER_SELECT); } while(0);
 #define TURN_HEATER_ON()	do { HEATER_PORT |=  (1 << HEATER_SELECT); } while(0);
 
 // power of the heater in percent
-uint8_t power;
+volatile uint8_t power;
 
 // a turn is a time intervall that will increased every time a decision for the heater is made.
 // a period are 100 turns * (n*1000). n is defined by HEATER_PERIOD_FAKTOR. A period is a full cycle.
@@ -52,6 +53,12 @@ void heater_cool(report_data_t *, bool cool);
  * 100 means full power, 50 means half power
  */
 void heater_setPower(uint8_t);
+
+/**
+ * Auto adjust the power
+ * @params status
+ */
+void heater_adjust_power(uint8_t);
 
 #endif
 

@@ -104,3 +104,37 @@ void heater_cool(report_data_t *data, bool cool){
 void heater_setPower(uint8_t p){
     power = p;
 }
+
+void heater_adjust_power(uint8_t state){
+
+    uint16_t Tc = (globalTemp /100);    // CurrentTemp
+    uint16_t Tt = targetTemp;           // TargetTemp
+    
+    if(state == STATE_HOLD){
+        heater_setPower( HEATER_IDLE_POWER );
+        return;
+    } else if( state == STATE_SOLDER){
+        if( Tc < Tt ){
+            uint16_t startAdjustTemp = (Tt - HEATER_ADJUST_TEMP_TRIGGER);
+            if( Tc < startAdjustTemp ){
+                heater_setPower(100);
+                return;
+            } // or fall throw to adjust
+        } else {
+            heater_setPower(0);
+            return;
+        }
+    }
+    
+    // Adjust
+    // get satuartion
+    uint8_t saturation = ((((100 / HEATER_ADJUST_TEMP_TRIGGER) * (HEATER_ADJUST_TEMP_TRIGGER - (Tt - Tc))) -100) *-1);
+    // get duty cycle range
+    uint8_t dcRange = 100 - HEATER_IDLE_POWER;
+    
+    if( saturation > 0 && saturation < 100 ){
+        uint8_t power = ((dcRange * saturation) / 100) + HEATER_IDLE_POWER;
+        heater_setPower( power );
+    }
+
+}

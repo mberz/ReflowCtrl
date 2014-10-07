@@ -92,6 +92,7 @@ int main(void) {
         if( shouldSetTargetTemp == 1){
         	targetTemp = (data_in.temp / 100);
         	shouldSetTargetTemp = 0;
+            state = STATE_SOLDER;
         }
         
         // check controls
@@ -105,29 +106,16 @@ int main(void) {
             heater_reached(&data_out, 0);
             heater_setPower(100);
             data_in.command = '\0';
+            data_in.temperature = 0;
+            data_out.command = '\0';
+            data_out.temperature = 0;
         }
         
         state = control_run(state);
         
         // adjust temperature
-        if(state == STATE_HOLD){
-        	heater_setPower(20);
-        	
-        } else if( state == STATE_SOLDER){
-	        if( (globalTemp /100) >= (targetTemp - HEATER_ADJUST_TEMP_TRIGGER)){
-        		uint8_t tempDifference = ((targetTemp + HEATER_ADJUST_TEMP_TRIGGER) - (globalTemp /100));
-        		uint8_t newPower;
-        		if(tempDifference > 0){
-	        		newPower = (100 / (HEATER_ADJUST_TEMP_TRIGGER *2) * tempDifference);
-    			} else {
-    				newPower = 0;
-    			}    		
-				heater_setPower(newPower);
-    	    } else {
-    	    	heater_setPower(100);
-    	    }
-    	}
-        
+        heater_adjust_power(state);
+
     }
     return 0;	
 }
