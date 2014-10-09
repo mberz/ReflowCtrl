@@ -24,16 +24,26 @@ extern "C" {
 
 usbDevice_t* device;
 
-void reflowctrl_init(void){
+int reflowctrl_init(void){
 	device = NULL;
     recived = calloc(1, sizeof(report_parsed_data_t));
     send = calloc(1, sizeof(report_parsed_data_t));
     check = 0;
+    if(recived != NULL && send != NULL){
+    	// ok
+    	return 0;
+    }
+    return 1;
 }
 
-void reflowctrl_destroy(void){
+int reflowctrl_destroy(void){
     free(send);
     free(recived);
+    if(recived == NULL && free == NULL){
+    	// ok
+    	return 0;
+    }
+    return 1;
 }
 
 void setDataToRaw(char *data, report_raw_data_t *rarPtr){
@@ -105,12 +115,13 @@ void open_device(void){
 	}
 }
 
-void destroy(void){
+int destroy(void){
 	hidtool_close((usb_dev_handle *)device);
 	device = NULL;
+	return 0;
 }
 
-void reflowctrl_read_cb(int *running, void *callback(report_parsed_data_t *)){
+int reflowctrl_read_cb(int *running, void *callback(report_parsed_data_t *)){
 	open_device();
 
     while(running) {
@@ -119,6 +130,8 @@ void reflowctrl_read_cb(int *running, void *callback(report_parsed_data_t *)){
         callback(recived);
         sleep(running);
     }
+    
+    return 0;
 }
 
 report_parsed_data_t *reflowctrl_read(void){
@@ -131,7 +144,7 @@ report_parsed_data_t *reflowctrl_read(void){
     return recived;
 }
 
-void reflowctrl_write(report_parsed_data_t *data){
+int reflowctrl_write(report_parsed_data_t *data){
     set_next_raw_data.control = 0;
     set_next_raw_data.temp = 0; //data->temperature;
     set_next_raw_data.command = 0; //data->command;
@@ -170,7 +183,8 @@ void reflowctrl_write(report_parsed_data_t *data){
     
     // open device
     open_device();
-    hidtool_write((usb_dev_handle *)device, (char *)&set_next_raw_data);
+    int err = hidtool_write((usb_dev_handle *)device, (char *)&set_next_raw_data);
+    return err;
 }
 
 

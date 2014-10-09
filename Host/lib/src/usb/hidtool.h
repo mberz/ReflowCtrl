@@ -13,6 +13,6 @@ usb_dev_handle* hidtool_open(void);
 void hidtool_close(usb_dev_handle*);
 
 char* hidtool_read(usb_dev_handle*);
-void hidtool_write(usb_dev_handle*, char *);
+int hidtool_write(usb_dev_handle*, char *);
 
 #endif

@@ -58,22 +58,22 @@ report_parsed_data_t *send;
 /** 
  * Initialise the reflow controler 
  */
-void reflowctrl_init(void);
+int reflowctrl_init(void);
 
 /**
  * Close and free the device
  */
-void destroy(void);
+int destroy(void);
 
 /** 
  * Close the controler 
  */
-void reflowctrl_destroy(void);
+int reflowctrl_destroy(void);
 
 /**
  * Read data from the controler board and write the result (report_parsed_data_t) into the callback function
  */
-void reflowctrl_read_cb(int *, void *());
+int reflowctrl_read_cb(int *, void *());
 
 /**
  * Read from the controler board and returns the reult (report_parsed_data_t)
@@ -83,7 +83,7 @@ report_parsed_data_t *reflowctrl_read(void);
 /**
  * Write something to the controler board
  */
-void reflowctrl_write(report_parsed_data_t *);
+int reflowctrl_write(report_parsed_data_t *);
 
 #endif
     

@@ -93,14 +93,17 @@ char* hidtool_read(usb_dev_handle *dev){
     return readbuffer;
 }
 
-void hidtool_write(usb_dev_handle *dev, char *data){
+int hidtool_write(usb_dev_handle *dev, char *data){
     int         err;
 
     memset(writebuffer, 0, 5);
     memcpy(writebuffer +1, data, 4);
     
-    if((err = usbhidSetReport(dev, writebuffer, 5)) != 0)   /* add a dummy report ID */
-    fprintf(stderr, "error writing data: %s\n", usbErrorMessage(err));
+    if((err = usbhidSetReport(dev, writebuffer, 5)) != 0){   /* add a dummy report ID */
+	    fprintf(stderr, "error writing data: %s\n", usbErrorMessage(err));
+	    return 1;
+	}
+	return 0;
 }
 
 /* ------------------------------------------------------------------------- */
