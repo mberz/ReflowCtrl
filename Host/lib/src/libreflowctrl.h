@@ -15,7 +15,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <math.h>
-
+#include <stdint.h>
 
 #define STATUS_DIRECTION    0  // 0= from device, 1= from host
 #define STATUS_PREHEAT      1
