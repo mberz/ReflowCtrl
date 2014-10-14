@@ -1,19 +1,19 @@
 #!/usr/bin/perl
 
 ## preheat -- bereit machen
-print `.cli/target/reflowctrl -p 50`;
-while(parseout_from_ctrl_block(`.cli/target/reflowctrl`)->{'temp'} < 50){
+print `./cli/target/reflowctrl -p 50`;
+while(parseout_from_ctrl_block(`./cli/target/reflowctrl`)->{'temp'} < 50){
 	
 	sleep(1);
 }
 
 ## Heat slowly to 100  hold and continue
 for($i = 50; $i<=100; $i++){
-	print `.cli/target/reflowctrl -t $i`;
+	print `./cli/target/reflowctrl -t $i`;
 	sleep(2);	
 }
 # warten ob erreicht:
-while(parseout_from_ctrl_block(`.cli/target/reflowctrl`)->{'reached'} eq 'No'){	
+while(parseout_from_ctrl_block(`./cli/target/reflowctrl`)->{'reached'} eq 'No'){	
 	sleep(10);
 }
 
@@ -21,9 +21,9 @@ while(parseout_from_ctrl_block(`.cli/target/reflowctrl`)->{'reached'} eq 'No'){
 sleep(10);
 
 ## Heat (burn) to 180 and end 
-print `.cli/target/reflowctrl -t 180`;
+print `./cli/target/reflowctrl -t 180`;
 sleep(4);
-while(parseout_from_ctrl_block(`.cli/target/reflowctrl`)->{'temp'} < 180){	
+while(parseout_from_ctrl_block(`./cli/target/reflowctrl`)->{'temp'} < 180){	
 	sleep(2);
 }
 
