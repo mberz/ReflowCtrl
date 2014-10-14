@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <math.h>
+#include <stdint.h>
 
 #include "../../lib/src/libreflowctrl.h"
 #include "io/read.h"

@@ -18,7 +18,7 @@ include environment/applications.mk
 include options.mk
 
 # C Source files
-BINSRC = $(shell find ./src* -name *.c -d 1)
+BINSRC = $(shell find ./src* -maxdepth 1 -name *.c)
 PRJSRC = $(shell find ./src*/**/ -name *.c)
 # Assambler Source 
 PRJASM += $(shell find ./src*/**/ -name *.S)
@@ -46,8 +46,7 @@ CFLAGS = -I$(INC) -g -O$(OPTLEVEL)                \
          $(USBFLAGS)                               
          
 # linker
-LDFLAGS = -Wl,                              \
-		   -L../lib/target
+LDFLAGS = -L../lib/target
 
 ##### automatic target names ####
 TRG=$(TARGETDIR)/$(PROJECTNAME)
